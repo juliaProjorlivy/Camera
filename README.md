@@ -1,5 +1,4 @@
 # Camera project   
-# Описание проекта   
 Идея проекта заключалась в том, чтобы создать камеру, реагирующую на движение. В итоговом варианте камера реагирует на синий цвет, а так же может двигаться с помщью пульта. Мозгом нашего проекта стала [Raspberry pi 4](https://www.raspberrypi.com/documentation/computers/raspberry-pi.html) с камерой [Camera Module 3.](https://www.raspberrypi.com/products/camera-module-3/)  Чтобы камера была подвижной по осям Ox и Oy, мы использовали два [сервопривода](https://docs.sunfounder.com/projects/ultimate-sensor-kit/en/latest/components_basic/27-component_servo.html). Для включения/выключения камеры и её управления был задйствован [ИК-приемник,](https://roboshop.spb.ru/sensors/infrakrasnye-datchiki/tl1838) управляемый [Arduino Nano](https://3d-diy.ru/blog/arduino-nano/?srsltid=AfmBOoobsfLvRHXmztk4oDekqijM6OquVmeA1C7HS3Jm3zs6FXj-3EUY) .   
 # Настройка Raspberry pi   
 ### Установка OS и VNC   
@@ -52,8 +51,7 @@ sudo journalctl -u lircd -n 50 --no-pager
 Но ошибки вроде и не было, но и ничего не работало, как надо. Так что было принято стратегическое решение воспользоваться arduino для работы с пультом - так оказалось в разы проще.   
 ### ИК-приемник и arduino nano   
 Итак перед нами цель - сделать так, чтобы ардуинка принимала сигналы с ИК-приемника и отправляла название кнопки через Serial порт на малинку.    
-Скетч под это дело уже есть на просторах интернета: [https://newbiely.com/tutorials/arduino-nano/arduino-nano-ir-remote-control](https://newbiely.com/tutorials/arduino-nano/arduino-nano-ir-remote-control) .  Я его впоследствии немного изменила под свои нужды, но об этом позже. Короче говоря, заливаем скетч на ардуинку. Проверим через Serial Monitor, что кнопки на пульте правильно отображаются.   
-Теперь подключаем это все к Raspberry pi (не забываем тут про usb кабель):   
+Скетч под это дело уже есть на просторах интернета: [https://newbiely.com/tutorials/arduino-nano/arduino-nano-ir-remote-control](https://newbiely.com/tutorials/arduino-nano/arduino-nano-ir-remote-control) .  Я его впоследствии немного изменила под свои нужды, но об этом позже. Короче говоря, заливаем скетч на ардуинку. Проверим через Serial Monitor, что кнопки на пульте правильно отображаются. Теперь подключаем это все к Raspberry pi (не забываем тут про usb кабель):   
 ![circuit_image](images/circuit_image.png)    
 ## Написание кода   
 ### Код для камеры и сервоприводов   
