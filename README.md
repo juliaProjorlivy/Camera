@@ -54,7 +54,7 @@ mode2 -d /dev/lirc0
 
 ![remote_image](images/remote_photo.png)
 
-    Но внимание!!! На него в общем [архиве](https://lirc.sourceforge.net/remotes/) не нашлось конфига!!! Окей - мы не отчаялись. В таком случае можно вручную записать свой, используя утилиту irrecord. Однако, как и  было написано в указанной ранее в [статье :](https://www.instructables.com/Easy-Setup-IR-Remote-Control-Using-LIRC-for-the-Ra/) "I was VERY unsuccessful trying to create a file using this utility despite much effort". Испытав такое же разочарование на своем опыте, мы пошли вглубь интернета с целью все-таки найти конфиг под наш пульт. И знаете что, кто ищет - тот найдет! Ура конфиг найден! Если кому понадобится ссылка есть на [этом сайте](https://elchupanibrei.livejournal.com/43594.html) рядом с каринкой пульта. Добавляем сюда `/etc/lirc/lircd.conf.d/` наш конфиг и инклюдим его в  `/etc/lirc/lircd.conf:`
+Но внимание!!! На него в общем [архиве](https://lirc.sourceforge.net/remotes/) не нашлось конфига!!! Окей - мы не отчаялись. В таком случае можно вручную записать свой, используя утилиту irrecord. Однако, как и  было написано в указанной ранее в [статье :](https://www.instructables.com/Easy-Setup-IR-Remote-Control-Using-LIRC-for-the-Ra/) "I was VERY unsuccessful trying to create a file using this utility despite much effort". Испытав такое же разочарование на своем опыте, мы пошли вглубь интернета с целью все-таки найти конфиг под наш пульт. И знаете что, кто ищет - тот найдет! Ура конфиг найден! Если кому понадобится ссылка есть на [этом сайте](https://elchupanibrei.livejournal.com/43594.html) рядом с каринкой пульта. Добавляем сюда `/etc/lirc/lircd.conf.d/` наш конфиг и инклюдим его в  `/etc/lirc/lircd.conf:`
 
 ```sh
 mv carMP3.conf /etc/lirc/lircd.conf.d/
