@@ -8,6 +8,7 @@ import serial
 from queue import Queue
 from datetime import datetime
 from picamera2.encoders import H264Encoder
+import os
 
 # =============================================
 # Shared Data Queue (Thread-Safe)
@@ -75,7 +76,6 @@ class ServoController:
             if angle_x != self.current_angle_x:
                 self.pi.set_servo_pulsewidth(self.pin_x, self.map_to_pulse(angle_x))
                 self.current_angle_x = angle_x
-
             if angle_y != self.current_angle_y:
                 self.pi.set_servo_pulsewidth(self.pin_y, self.map_to_pulse(angle_y))
                 self.current_angle_y = angle_y
@@ -98,7 +98,6 @@ class ServoController:
 # Main Tracking Thread
 # =============================================
 def object_tracker(shutdown_event, thread_returned):
-
    # Initialize camera with optimized settings
     picam2 = Picamera2()
 
@@ -110,6 +109,7 @@ def object_tracker(shutdown_event, thread_returned):
     picam2.configure(config)
     encoder = H264Encoder(10000000)
 
+    # To control video recording
     IS_RECORDING = False
     # Initialize servo controller (GPIO pins for X and Y servos)
     try:
@@ -144,7 +144,7 @@ def object_tracker(shutdown_event, thread_returned):
                 elif(command == "+"):
                     print("moving up")
                     servos.move_to(0, -20)
-                elif(command == "â€"):
+                elif(command == "–"):
                     print("moving down")
                     servos.move_to(0, 20)
                 elif(command == "EQ"):
@@ -153,20 +153,22 @@ def object_tracker(shutdown_event, thread_returned):
                 elif(command == "CH"):
                     thread_returned.set()
                     return
-                elif(command == "0" and not IS_RECORDING):
+                elif((command == "0") and not IS_RECORDING):
                     IS_RECORDING = True
-                    output_filename = f"images/recording_{datetime.now().strftime('%Y%m%d_%H%M%S')}.h264"
-                    print(f"recording started {output_filename}")
-                    picam2.start_recording(encoder, output_filename)
-                elif(command == "1" and  IS_RECORDING):
+                    filename = f"/home/pi/images/record_{datetime.now().strftime('%Y%m%d_%H%M%S')}.h264"
+                    try:
+                        picam2.start_recording(encoder, filename)
+                    except Exception as ex:
+                        template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+                        message = template.format(type(ex).__name__, ex.args)
+                        print(f"in except\n {message}")
+                elif(command == "1" and IS_RECORDING):
                     IS_RECORDING = False
                     picam2.stop_recording()
+                    picam2.start()
                     print("Recording finished.")
-                # Add your command handling here
 
-            # Capture frame from camera
             frame = picam2.capture_array()
-
             # Convert from RGB to HSV color space
             hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
@@ -195,16 +197,14 @@ def object_tracker(shutdown_event, thread_returned):
                     x, y, w, h = cv2.boundingRect(largest_contour)
                     center_x = x + w // 2
                     center_y = y + h // 2  # Fixed: removed incorrect subtraction
-
                     print(f"Tracking at: {center_x}, {center_y}")
 
                     # Update servos with smoothed coordinates
-                    servos.update_from_coordinates(center_x, center_y)           
+                    servos.update_from_coordinates(center_x, center_y)
             # Exit on 'q' key press
             if cv2.waitKey(1) & 0xFF == ord('q') or shutdown_event.is_set():
                 break
     finally:
-        #recorder.stop_recording()
         if IS_RECORDING:
             picam2.stop_recording()
             print("Recording finished.")
@@ -212,6 +212,7 @@ def object_tracker(shutdown_event, thread_returned):
         picam2.close()
         servos.cleanup()
         print("closing picam2 and servos")
+
 
 # =============================================
 # Main Program
