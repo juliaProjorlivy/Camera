@@ -2,7 +2,9 @@
 # Camera project
 
 Идея проекта заключалась в том, чтобы создать камеру, реагирующую на движение. В итоговом варианте камера реагирует на синий цвет, а так же может двигаться с помощью пульта. Мозгом нашего проекта стала [Raspberry pi 4](https://www.raspberrypi.com/documentation/computers/raspberry-pi.html) с камерой [Camera Module 3.](https://www.raspberrypi.com/products/camera-module-3/)  Чтобы камера была подвижной по осям Ox и Oy, мы использовали два [сервопривода](https://docs.sunfounder.com/projects/ultimate-sensor-kit/en/latest/components_basic/27-component_servo.html). Для включения/выключения камеры и её управления был задействован [ИК-приемник,](https://roboshop.spb.ru/sensors/infrakrasnye-datchiki/tl1838) управляемый [Arduino Nano](https://3d-diy.ru/blog/arduino-nano/?srsltid=AfmBOoobsfLvRHXmztk4oDekqijM6OquVmeA1C7HS3Jm3zs6FXj-3EUY).
+
 ![project_image](images/project_photo.jpg)
+
 ![project_gif](./images/project_usage.gif)
 
 # Настройка Raspberry pi
@@ -48,9 +50,11 @@ mode2 -d /dev/lirc0
 ```
 
 Если на экран выводится **pulse/space codes**, то все круто - работает.
-Второй шаг - найти конфиг для нашего пульта.У нас это обычный китайский пульт Car mp3.
+Второй шаг - найти конфиг для нашего пульта. У нас это обычный китайский пульт Car mp3.
+
 ![remote_image](images/remote_photo.png)
-Но внимание!!! На него[в общем архиве](https://lirc.sourceforge.net/remotes/) не нашлось конфига!!! Окей - мы не отчаялись. В таком случае можно вручную записать свой, используя утилиту irrecord. Однако, как и  было написано в указанной ранее[статье :](https://www.instructables.com/Easy-Setup-IR-Remote-Control-Using-LIRC-for-the-Ra/) "I was VERY unsuccessful trying to create a file using this utility despite much effort". Испытав такое же разочарование на своем опыте, мы пошли вглубь интернета с целью все-таки найти конфиг под наш пульт. И знаете что, кто ищет - тот найдет! Ура конфиг найден! Если кому понадобится ссылка есть на [этом сайте](https://elchupanibrei.livejournal.com/43594.html) рядом с каринкой пульта. Добавляем сюда `/etc/lirc/lircd.conf.d/` наш конфиг и инклюдим его в  `/etc/lirc/lircd.conf:`
+
+    Но внимание!!! На него в общем [архиве](https://lirc.sourceforge.net/remotes/) не нашлось конфига!!! Окей - мы не отчаялись. В таком случае можно вручную записать свой, используя утилиту irrecord. Однако, как и  было написано в указанной ранее в [статье :](https://www.instructables.com/Easy-Setup-IR-Remote-Control-Using-LIRC-for-the-Ra/) "I was VERY unsuccessful trying to create a file using this utility despite much effort". Испытав такое же разочарование на своем опыте, мы пошли вглубь интернета с целью все-таки найти конфиг под наш пульт. И знаете что, кто ищет - тот найдет! Ура конфиг найден! Если кому понадобится ссылка есть на [этом сайте](https://elchupanibrei.livejournal.com/43594.html) рядом с каринкой пульта. Добавляем сюда `/etc/lirc/lircd.conf.d/` наш конфиг и инклюдим его в  `/etc/lirc/lircd.conf:`
 
 ```sh
 mv carMP3.conf /etc/lirc/lircd.conf.d/
@@ -82,6 +86,7 @@ sudo journalctl -u lircd -n 50 --no-pager
 
 Итак перед нами цель - сделать так, чтобы ардуинка принимала сигналы с ИК-приемника и отправляла название кнопки через Serial порт на малинку.
 Скетч под это дело уже есть на просторах интернета: [https://newbiely.com/tutorials/arduino-nano/arduino-nano-ir-remote-control](https://newbiely.com/tutorials/arduino-nano/arduino-nano-ir-remote-control). Я его впоследствии немного изменила под свои нужды, но об этом позже. Короче говоря, заливаем скетч на ардуинку. Проверим через Serial Monitor, что кнопки на пульте правильно отображаются. Теперь подключаем это все к Raspberry pi (не забываем тут про usb кабель):
+
 ![circuit_image](images/circuit_image.png)
 
 ## Написание кода
